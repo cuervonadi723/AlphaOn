@@ -6,62 +6,88 @@ public class PlayerInventory : MonoBehaviour
     {
         Piedra,
         Rama,
-        Madera
+        Madera,
+        Tela,
+        Aloe,
+        Venda
     }
 
-    public int[] resources = new int[3];
+    [System.Serializable]
+    public class RecursoInventario
+    {
+        public TipoRecurso tipo;
+        public int cantidad;
+        public int maximo = 10;
+    }
 
-    [Header("Limites")]
-    public int maxPiedra = 8;
-    public int maxRama = 10;
-    public int maxMadera = 6;
+    [Header("Recursos")]
+    public RecursoInventario[] recursos;
 
     public int GetResource(TipoRecurso tipo)
     {
-        return resources[(int)tipo];
+        RecursoInventario recurso = BuscarRecurso(tipo);
+
+        if (recurso == null)
+            return 0;
+
+        return recurso.cantidad;
     }
 
     public bool AddResource(TipoRecurso tipo, int cantidad)
     {
-        int index = (int)tipo;
-        int limite = GetMaxForType(tipo);
+        RecursoInventario recurso = BuscarRecurso(tipo);
 
-        if (resources[index] >= limite)
+        if (recurso == null)
             return false;
 
-        resources[index] += cantidad;
+        if (recurso.cantidad >= recurso.maximo)
+            return false;
 
-        if (resources[index] > limite)
-            resources[index] = limite;
+        recurso.cantidad += cantidad;
+
+        if (recurso.cantidad > recurso.maximo)
+            recurso.cantidad = recurso.maximo;
 
         return true;
     }
 
     public bool HasResource(TipoRecurso tipo, int cantidad)
     {
-        return resources[(int)tipo] >= cantidad;
+        return GetResource(tipo) >= cantidad;
+    }
+
+
+    public int GetMaxResource(TipoRecurso tipo)
+    {
+        RecursoInventario recurso = BuscarRecurso(tipo);
+
+        if (recurso == null)
+            return 0;
+
+        return recurso.maximo;
     }
 
     public void RemoveResource(TipoRecurso tipo, int cantidad)
     {
-        resources[(int)tipo] -= cantidad;
+        RecursoInventario recurso = BuscarRecurso(tipo);
 
-        if (resources[(int)tipo] < 0)
-            resources[(int)tipo] = 0;
+        if (recurso == null)
+            return;
+
+        recurso.cantidad -= cantidad;
+
+        if (recurso.cantidad < 0)
+            recurso.cantidad = 0;
     }
 
-    int GetMaxForType(TipoRecurso tipo)
+    RecursoInventario BuscarRecurso(TipoRecurso tipo)
     {
-        switch (tipo)
+        for (int i = 0; i < recursos.Length; i++)
         {
-            case TipoRecurso.Piedra:
-                return maxPiedra;
-            case TipoRecurso.Rama:
-                return maxRama;
-            case TipoRecurso.Madera:
-                return maxMadera;
+            if (recursos[i].tipo == tipo)
+                return recursos[i];
         }
 
-        return 0;
+        return null;
     }
 }

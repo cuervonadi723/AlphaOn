@@ -12,6 +12,9 @@ public class MochilaUI : MonoBehaviour
     public TextMeshProUGUI piedraText;
     public TextMeshProUGUI ramaText;
     public TextMeshProUGUI maderaText;
+    public TextMeshProUGUI telaText;
+    public TextMeshProUGUI aloeText;
+    public TextMeshProUGUI vendaText;
 
     [Header("Textos Herramientas")]
     public TextMeshProUGUI hachaText;
@@ -49,8 +52,6 @@ public class MochilaUI : MonoBehaviour
 
         if (mochilaPanel != null)
             mochilaPanel.SetActive(false);
-
-   
     }
 
     void ActualizarUI()
@@ -60,17 +61,32 @@ public class MochilaUI : MonoBehaviour
             if (piedraText != null)
                 piedraText.text = "Piedras: " +
                     inventory.GetResource(PlayerInventory.TipoRecurso.Piedra) +
-                    " / " + inventory.maxPiedra;
+                    " / " + inventory.GetMaxResource(PlayerInventory.TipoRecurso.Piedra);
 
             if (ramaText != null)
                 ramaText.text = "Ramas: " +
                     inventory.GetResource(PlayerInventory.TipoRecurso.Rama) +
-                    " / " + inventory.maxRama;
+                    " / " + inventory.GetMaxResource(PlayerInventory.TipoRecurso.Rama);
 
             if (maderaText != null)
                 maderaText.text = "Madera: " +
                     inventory.GetResource(PlayerInventory.TipoRecurso.Madera) +
-                    " / " + inventory.maxMadera;
+                    " / " + inventory.GetMaxResource(PlayerInventory.TipoRecurso.Madera);
+
+            if (telaText != null)
+                telaText.text = "Tela: " +
+                    inventory.GetResource(PlayerInventory.TipoRecurso.Tela) +
+                    " / " + inventory.GetMaxResource(PlayerInventory.TipoRecurso.Tela);
+
+            if (aloeText != null)
+                aloeText.text = "Aloe: " +
+                    inventory.GetResource(PlayerInventory.TipoRecurso.Aloe) +
+                    " / " + inventory.GetMaxResource(PlayerInventory.TipoRecurso.Aloe);
+
+            if (vendaText != null)
+                vendaText.text = "Vendas: " +
+                    inventory.GetResource(PlayerInventory.TipoRecurso.Venda) +
+                    " / " + inventory.GetMaxResource(PlayerInventory.TipoRecurso.Venda);
         }
 
         if (crafting != null)
