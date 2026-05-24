@@ -8,6 +8,7 @@ public class AntenaInteraccion : MonoBehaviour
 
     private bool jugadorCerca = false;
     private bool reparada = false;
+    public MesaTrabajoInteraccion mesaTrabajo;
 
     void Start()
     {
@@ -30,8 +31,11 @@ public class AntenaInteraccion : MonoBehaviour
         if (radio != null)
             radio.ActivarSenal();
 
+        if (mesaTrabajo != null)
+            mesaTrabajo.ActivarEnergia();
+
         if (crafting != null)
-            crafting.MostrarMensaje("Creo que ya quedó. Tal vez la radio ahora reciba algo.");
+            crafting.MostrarMensaje("Creo que ya quedó... Tal vez ahora funcione la mesa de trabajo de la casa.");
 
         if (textoE != null)
             textoE.SetActive(false);

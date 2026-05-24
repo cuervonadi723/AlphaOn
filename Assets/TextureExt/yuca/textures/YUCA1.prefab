@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 878454537070947600}
   - component: {fileID: 9160722919157989432}
   - component: {fileID: 1108044069183574891}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: MT_PM_Yucca_flaccida_01_03
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -92,7 +92,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8266782741652357390}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Omni002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -125,7 +125,8 @@ GameObject:
   - component: {fileID: 4237017594638892742}
   - component: {fileID: 2432379363043992749}
   - component: {fileID: 2035440001647034683}
-  m_Layer: 0
+  - component: {fileID: 6886183436173995702}
+  m_Layer: 6
   m_Name: YUCA1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,6 +178,24 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tipo: 3
   cantidad: 2
+--- !u!114 &6886183436173995702
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3568884593924220028}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 4
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &4682349639351725902
 GameObject:
   m_ObjectHideFlags: 0
@@ -186,7 +205,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5365832675000952572}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Omni001
   m_TagString: Untagged
   m_Icon: {fileID: 0}

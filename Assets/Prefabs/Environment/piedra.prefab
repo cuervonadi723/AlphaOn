@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5922898185827845874}
   - component: {fileID: 4881762809753223272}
   - component: {fileID: 9014725778841477981}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Object_5
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 2182351731115921982}
   - component: {fileID: 2403877278442206315}
   - component: {fileID: 4831889809125849461}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Object_6
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 6295267359892479198}
   - component: {fileID: 1553484670266672703}
   - component: {fileID: 6350189323498210569}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Object_3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -260,7 +260,7 @@ GameObject:
   - component: {fileID: 4019641414052059912}
   - component: {fileID: 4333458325825450675}
   - component: {fileID: 6626819851596733678}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Object_4
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -343,7 +343,9 @@ GameObject:
   - component: {fileID: 5571741682826906518}
   - component: {fileID: 5663148453395947102}
   - component: {fileID: 6849275359228496316}
-  m_Layer: 0
+  - component: {fileID: 8131827910455080871}
+  - component: {fileID: -8758163612348052033}
+  m_Layer: 6
   m_Name: piedra
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -393,6 +395,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tipo: 0
   cantidad: 1
+--- !u!114 &8131827910455080871
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5051100509668299052}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 063145d1c024736459af217a354d79a5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-8758163612348052033
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5051100509668299052}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 1, g: 1, b: 1, a: 1}
+  outlineWidth: 4
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
 --- !u!1 &5740635060323899540
 GameObject:
   m_ObjectHideFlags: 0
@@ -404,7 +436,7 @@ GameObject:
   - component: {fileID: 5134457474823101210}
   - component: {fileID: 1940909688383334683}
   - component: {fileID: 4507118821338186591}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Object_2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -485,7 +517,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6621740054773649629}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sasso.obj.cleaner.materialmerger.gles
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -521,7 +553,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2604270159896546939}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Sketchfab_model
   m_TagString: Untagged
   m_Icon: {fileID: 0}

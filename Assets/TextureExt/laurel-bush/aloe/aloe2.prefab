@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1829161543789078563}
   - component: {fileID: 5722540430801216728}
   - component: {fileID: 7042708865014783719}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: pCube10
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -106,7 +106,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7616184849390945732}
-  m_Layer: 0
+  - component: {fileID: 5325249668899529121}
+  - component: {fileID: -1496955343279708051}
+  m_Layer: 6
   m_Name: aloe2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -129,3 +131,35 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &5325249668899529121
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7131959531325136766}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5fea29bb7c508c244a1f805a5fd3fc4d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  outlineMode: 0
+  outlineColor: {r: 0.65882355, g: 1, b: 0.6039216, a: 1}
+  outlineWidth: 4
+  precomputeOutline: 0
+  bakeKeys: []
+  bakeValues: []
+--- !u!114 &-1496955343279708051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7131959531325136766}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2c888b486989472429d5c9d904df4bcd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  tipo: 4
+  cantidad: 2
