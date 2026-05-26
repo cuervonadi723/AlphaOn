@@ -2,19 +2,67 @@ using UnityEngine;
 
 public class Tree : MonoBehaviour
 {
+    [Header("Audio")]
+    public AudioClip sonidoGolpe;
+
+    [Header("Particulas")]
+    public ParticleSystem particulasMadera;
+    public ParticleSystem particulasHojas;
+
+    [Header("Recursos")]
     public int golpesNecesarios = 3;
-    int golpesActuales = 0;
+    private int golpesActuales = 0;
 
     public int maderaQueDa = 3;
 
-    public void Golpear(CraftingSystem crafting)
+    private AudioSource audioSource;
+
+    void Start()
     {
-        if (crafting == null || crafting.inventory == null) return;
+        PlayerInput player = FindObjectOfType<PlayerInput>();
+
+        if (player != null)
+            audioSource = player.GetComponent<AudioSource>();
+    }
+
+    public void Golpear(CraftingSystem crafting, RaycastHit hit)
+    {
+        if (crafting == null || crafting.inventory == null)
+            return;
 
         if (!crafting.EstaCrafteado(CraftingSystem.Crafteos.Hacha))
         {
             crafting.MostrarMensaje("Falta hacha");
             return;
+        }
+
+        if (audioSource != null && sonidoGolpe != null)
+        {
+            audioSource.pitch = Random.Range(0.7f, 1.3f);
+            audioSource.volume = Random.Range(0.5f, 0.7f);
+            audioSource.PlayOneShot(sonidoGolpe);
+        }
+
+        if (particulasMadera != null)
+        {
+            ParticleSystem p = Instantiate(
+                particulasMadera,
+                hit.point,
+                Quaternion.LookRotation(hit.normal)
+            );
+
+            Destroy(p.gameObject, 2f);
+        }
+
+        if (particulasHojas != null)
+        {
+            ParticleSystem p2 = Instantiate(
+                particulasHojas,
+                hit.point,
+                Quaternion.identity
+            );
+
+            Destroy(p2.gameObject, 2f);
         }
 
         golpesActuales++;

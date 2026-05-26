@@ -206,5 +206,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 514821cb71a5d064eb45fb26b8a24e12, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sonidoGolpe: {fileID: 8300000, guid: f6aac23a0e15ae3488ee023fd132d0cf, type: 3}
+  particulasPiedra: {fileID: 8322617754699259665, guid: 4bfbd0238c5464a428fcc36ccfa0233b, type: 3}
+  particulasPolvo: {fileID: 8322617754699259665, guid: 5df6cb66ba306df4a895f7e3dd7a57c0, type: 3}
   golpesNecesarios: 3
   piedrasQueDa: 3

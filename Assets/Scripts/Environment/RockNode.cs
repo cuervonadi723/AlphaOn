@@ -2,14 +2,33 @@ using UnityEngine;
 
 public class RockNode : MonoBehaviour
 {
+    [Header("Audio")]
+    public AudioClip sonidoGolpe;
+
+    [Header("Particulas")]
+    public ParticleSystem particulasPiedra;
+    public ParticleSystem particulasPolvo;
+
+    [Header("Recursos")]
     public int golpesNecesarios = 3;
-    int golpesActuales = 0;
+    private int golpesActuales = 0;
 
     public int piedrasQueDa = 3;
 
-    public void Golpear(CraftingSystem crafting)
+    private AudioSource audioSource;
+
+    void Start()
     {
-        if (crafting == null || crafting.inventory == null) return;
+        PlayerInput player = FindObjectOfType<PlayerInput>();
+
+        if (player != null)
+            audioSource = player.GetComponent<AudioSource>();
+    }
+
+    public void Golpear(CraftingSystem crafting, RaycastHit hit)
+    {
+        if (crafting == null || crafting.inventory == null)
+            return;
 
         if (!crafting.EstaCrafteado(CraftingSystem.Crafteos.Pico))
         {
@@ -17,11 +36,47 @@ public class RockNode : MonoBehaviour
             return;
         }
 
+        // sonido
+        if (audioSource != null && sonidoGolpe != null)
+        {
+            audioSource.pitch = Random.Range(0.7f, 1.3f);
+            audioSource.volume = Random.Range(0.5f, 0.7f);
+            audioSource.PlayOneShot(sonidoGolpe);
+        }
+
+        // particulkas de piedra
+        if (particulasPiedra != null)
+        {
+            ParticleSystem p = Instantiate(
+                particulasPiedra,
+                hit.point,
+                Quaternion.LookRotation(hit.normal)
+            );
+
+            Destroy(p.gameObject, 2f);
+        }
+
+        // particulas de polvo
+        if (particulasPolvo != null)
+        {
+            ParticleSystem p2 = Instantiate(
+                particulasPolvo,
+                hit.point,
+                Quaternion.identity
+            );
+
+            Destroy(p2.gameObject, 2f);
+        }
+
         golpesActuales++;
 
         if (golpesActuales >= golpesNecesarios)
         {
-            crafting.inventory.AddResource(PlayerInventory.TipoRecurso.Piedra, piedrasQueDa);
+            crafting.inventory.AddResource(
+                PlayerInventory.TipoRecurso.Piedra,
+                piedrasQueDa
+            );
+
             Destroy(gameObject);
         }
     }

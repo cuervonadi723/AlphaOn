@@ -3,6 +3,7 @@ using TMPro;
 
 public class PlayerInput : MonoBehaviour
 {
+    public HotbarUI hotbar;
     public CraftingSystem crafting;
     public float rango = 5f;
 
@@ -12,6 +13,9 @@ public class PlayerInput : MonoBehaviour
 
     void Update()
     {
+        if (MochilaUI.MochilaAbiertaGlobal)
+            return;
+
         Detectar();
 
         if (Input.GetKeyDown(KeyCode.E))
@@ -21,7 +25,6 @@ public class PlayerInput : MonoBehaviour
 
         if (crafting == null) return;
 
-        // H cancela construccion
         if (crafting.estaConstruyendo)
         {
             if (Input.GetKeyDown(KeyCode.H))
@@ -32,7 +35,6 @@ public class PlayerInput : MonoBehaviour
             return;
         }
 
-        // Craft con tecla a designar en inspectr
         for (int i = 0; i < crafting.recetas.Length; i++)
         {
             CraftingSystem.Crafteos crafteo = (CraftingSystem.Crafteos)i;
@@ -43,9 +45,8 @@ public class PlayerInput : MonoBehaviour
             }
         }
 
-        // Ataque
         if (Input.GetMouseButtonDown(0))
-            Atacar();
+            UsarHerramienta();
     }
 
     void Detectar()
@@ -68,7 +69,7 @@ public class PlayerInput : MonoBehaviour
             if (arbol != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = arbol.GetTexto(crafting);
+                interactuarTexto.text = "Click: " + arbol.GetTexto(crafting).Replace("E: ", "");
                 return;
             }
 
@@ -76,7 +77,7 @@ public class PlayerInput : MonoBehaviour
             if (roca != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = roca.GetTexto(crafting);
+                interactuarTexto.text = "Click: " + roca.GetTexto(crafting).Replace("E: ", "");
                 return;
             }
 
@@ -118,28 +119,10 @@ public class PlayerInput : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, rango))
         {
-            RockNode roca = hit.collider.GetComponentInParent<RockNode>();
-            if (roca != null)
-            {
-                roca.Golpear(crafting);
-                return;
-            }
-
             Recolectable r = hit.collider.GetComponentInParent<Recolectable>();
             if (r != null)
             {
                 r.Recolectar(crafting);
-                return;
-            }
-
-            Tree t = hit.collider.GetComponentInParent<Tree>();
-            if (t != null)
-            {
-                if (crafting.EstaCrafteado(CraftingSystem.Crafteos.Hacha))
-                    t.Golpear(crafting);
-                else
-                    crafting.MostrarMensaje("Falta hacha");
-
                 return;
             }
 
@@ -166,17 +149,41 @@ public class PlayerInput : MonoBehaviour
         }
     }
 
-    void Atacar()
+    void UsarHerramienta()
     {
-        if (!crafting.EstaCrafteado(CraftingSystem.Crafteos.Lanza)) return;
+        Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
-        if (Physics.Raycast(Camera.main.transform.position, Camera.main.transform.forward, out hit, 2f))
+        if (Physics.Raycast(ray, out hit, rango))
         {
-            Animal animal = hit.collider.GetComponentInParent<Animal>();
+            RockNode roca = hit.collider.GetComponentInParent<RockNode>();
+            if (roca != null)
+            {
+                if (hotbar != null && hotbar.SlotTieneItem(MochilaUI.ItemID.Pico))
+                    roca.Golpear(crafting, hit);
+                else
+                    crafting.MostrarMensaje("Necesito tener el pico en la mano");
 
+                return;
+            }
+
+            Tree arbol = hit.collider.GetComponentInParent<Tree>();
+            if (arbol != null)
+            {
+                if (hotbar != null && hotbar.SlotTieneItem(MochilaUI.ItemID.Hacha))
+                    arbol.Golpear(crafting, hit);
+                else
+                    crafting.MostrarMensaje("Necesito tener el hacha en la mano");
+
+                return;
+            }
+
+            Animal animal = hit.collider.GetComponentInParent<Animal>();
             if (animal != null)
             {
-                animal.RecibirGolpe(GetComponent<PlayerInventory>());
+                if (crafting.EstaCrafteado(CraftingSystem.Crafteos.Lanza))
+                    animal.RecibirGolpe(GetComponent<PlayerInventory>());
+
+                return;
             }
         }
     }

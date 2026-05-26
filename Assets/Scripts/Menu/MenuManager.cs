@@ -17,6 +17,9 @@ public class MenuManager : MonoBehaviour
     [Header("Botones")]
     public Button botonCargarPartida;
 
+    [Header("Fade Escena")]
+    public FadeController fadeController;
+
     [Header("Configuracion")]
     public float velocidadFade = 0.35f;
     public string escenaNuevaPartida = "SampleScene";
@@ -25,11 +28,13 @@ public class MenuManager : MonoBehaviour
 
     void Start()
     {
+        // Opciones
         Opciones.SetActive(false);
         opcionesCanvasGroup.alpha = 0;
         opcionesCanvasGroup.interactable = false;
         opcionesCanvasGroup.blocksRaycasts = false;
 
+        // Menu partida
         MenuPartida.SetActive(false);
         partidaCanvasGroup.alpha = 0;
         partidaCanvasGroup.interactable = false;
@@ -46,14 +51,15 @@ public class MenuManager : MonoBehaviour
     public void NuevaPartida()
     {
         PlayerPrefs.DeleteKey("partidaGuardada");
-        SceneManager.LoadScene(escenaNuevaPartida);
+
+        StartCoroutine(CargarEscenaConFade());
     }
 
     public void CargarPartida()
     {
         if (PlayerPrefs.HasKey("partidaGuardada"))
         {
-            SceneManager.LoadScene(escenaNuevaPartida);
+            StartCoroutine(CargarEscenaConFade());
         }
     }
 
@@ -61,6 +67,7 @@ public class MenuManager : MonoBehaviour
     {
         Application.Quit();
     }
+
 
     public void AbrirOpciones()
     {
@@ -82,6 +89,7 @@ public class MenuManager : MonoBehaviour
 
         fadeActual = StartCoroutine(FadePanel(opcionesCanvasGroup, 0, Opciones));
     }
+
 
     public void AbrirMenuPartida()
     {
@@ -122,7 +130,13 @@ public class MenuManager : MonoBehaviour
         while (tiempo < velocidadFade)
         {
             tiempo += Time.deltaTime;
-            grupo.alpha = Mathf.Lerp(alphaInicial, alphaFinal, tiempo / velocidadFade);
+
+            grupo.alpha = Mathf.Lerp(
+                alphaInicial,
+                alphaFinal,
+                tiempo / velocidadFade
+            );
+
             yield return null;
         }
 
@@ -135,5 +149,16 @@ public class MenuManager : MonoBehaviour
 
         if (!abierto && panelCerrar != null)
             panelCerrar.SetActive(false);
+    }
+
+
+    IEnumerator CargarEscenaConFade()
+    {
+        yield return new WaitForSeconds(0.15f);
+
+        if (fadeController != null)
+            fadeController.CambiarEscena(escenaNuevaPartida);
+        else
+            SceneManager.LoadScene(escenaNuevaPartida);
     }
 }

@@ -3,108 +3,137 @@ using UnityEngine.UI;
 
 public class HotbarUI : MonoBehaviour
 {
+    [System.Serializable]
+    public class ItemHotbar
+    {
+        public MochilaUI.ItemID itemID;
+        public GameObject objetoEnMano;
+    }
+
+    [Header("Slots visuales")]
     public Image[] slots;
 
-    [Header("Iconos de Items")]
-    public GameObject iconoHacha;
-    public GameObject iconoPico;
-    public GameObject iconoLanza;
+    [Header("Items en mano")]
+    public ItemHotbar[] itemsHotbar;
 
-    [Header("Crafting")]
-    public CraftingSystem crafting;
-
+    [Header("Colores")]
     public Color normalColor = new Color32(60, 60, 60, 180);
     public Color selectedColor = new Color32(180, 160, 90, 220);
 
     public int selectedSlot = 0;
 
+    private MochilaUI.ItemID?[] hotbarItems = new MochilaUI.ItemID?[6];
+
     void Start()
     {
         UpdateHotbarVisual();
-        UpdateItemsVisual();
+        ActualizarObjetoEnMano();
     }
 
     void Update()
     {
+        if (slots == null || slots.Length == 0)
+            return;
+
         float scroll = Input.GetAxis("Mouse ScrollWheel");
 
         if (scroll > 0f)
         {
             selectedSlot--;
+
             if (selectedSlot < 0)
                 selectedSlot = slots.Length - 1;
 
             UpdateHotbarVisual();
+            ActualizarObjetoEnMano();
         }
 
         if (scroll < 0f)
         {
             selectedSlot++;
+
             if (selectedSlot >= slots.Length)
                 selectedSlot = 0;
 
             UpdateHotbarVisual();
+            ActualizarObjetoEnMano();
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
+        for (int i = 0; i < slots.Length; i++)
         {
-            selectedSlot = 0;
-            UpdateHotbarVisual();
+            if (Input.GetKeyDown(KeyCode.Alpha1 + i))
+            {
+                selectedSlot = i;
+                UpdateHotbarVisual();
+                ActualizarObjetoEnMano();
+            }
         }
+    }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2) && slots.Length > 1)
+    public void RecibirHotbar(MochilaUI.ItemID?[] nuevosItems)
+    {
+        for (int i = 0; i < hotbarItems.Length; i++)
         {
-            selectedSlot = 1;
-            UpdateHotbarVisual();
+            if (nuevosItems != null && i < nuevosItems.Length)
+                hotbarItems[i] = nuevosItems[i];
+            else
+                hotbarItems[i] = null;
         }
 
-        if (Input.GetKeyDown(KeyCode.Alpha3) && slots.Length > 2)
-        {
-            selectedSlot = 2;
-            UpdateHotbarVisual();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha4) && slots.Length > 3)
-        {
-            selectedSlot = 3;
-            UpdateHotbarVisual();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha5) && slots.Length > 4)
-        {
-            selectedSlot = 4;
-            UpdateHotbarVisual();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha6) && slots.Length > 5)
-        {
-            selectedSlot = 5;
-            UpdateHotbarVisual();
-        }
-
-        UpdateItemsVisual();
+        ActualizarObjetoEnMano();
     }
 
     void UpdateHotbarVisual()
     {
+        if (slots == null)
+            return;
+
         for (int i = 0; i < slots.Length; i++)
         {
-            slots[i].color = (i == selectedSlot) ? selectedColor : normalColor;
+            if (slots[i] != null)
+                slots[i].color = (i == selectedSlot) ? selectedColor : normalColor;
         }
     }
 
-    void UpdateItemsVisual()
+    void ActualizarObjetoEnMano()
     {
-        if (crafting == null)
+        for (int i = 0; i < itemsHotbar.Length; i++)
+        {
+            if (itemsHotbar[i].objetoEnMano != null)
+                itemsHotbar[i].objetoEnMano.SetActive(false);
+        }
+
+        if (selectedSlot < 0 || selectedSlot >= hotbarItems.Length)
             return;
 
-        iconoHacha.SetActive(crafting.EstaCrafteado(CraftingSystem.Crafteos.Hacha));
-        iconoPico.SetActive(crafting.EstaCrafteado(CraftingSystem.Crafteos.Pico));
-        iconoLanza.SetActive(crafting.EstaCrafteado(CraftingSystem.Crafteos.Lanza));
+        if (!hotbarItems[selectedSlot].HasValue)
+            return;
+
+        MochilaUI.ItemID itemSeleccionado = hotbarItems[selectedSlot].Value;
+
+        for (int i = 0; i < itemsHotbar.Length; i++)
+        {
+            if (itemsHotbar[i].itemID == itemSeleccionado)
+            {
+                if (itemsHotbar[i].objetoEnMano != null)
+                    itemsHotbar[i].objetoEnMano.SetActive(true);
+
+                return;
+            }
+        }
     }
 
     public int GetSelectedSlot()
     {
         return selectedSlot;
+    }
+
+    public bool SlotTieneItem(MochilaUI.ItemID item)
+    {
+        if (selectedSlot < 0 || selectedSlot >= hotbarItems.Length)
+            return false;
+
+        return hotbarItems[selectedSlot].HasValue &&
+               hotbarItems[selectedSlot].Value == item;
     }
 }

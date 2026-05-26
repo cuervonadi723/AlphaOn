@@ -111,5 +111,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 755309d7101efc943b3987592aecbd83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  sonidoGolpe: {fileID: 8300000, guid: 5a0b46f49ec874d4ab5289d98de38d74, type: 3}
+  particulasMadera: {fileID: 8322617754699259665, guid: b276913d6b152434288442d05fdc5970, type: 3}
+  particulasHojas: {fileID: 8322617754699259665, guid: a5a61403165bf4240b47f929f88082b3, type: 3}
   golpesNecesarios: 3
   maderaQueDa: 3

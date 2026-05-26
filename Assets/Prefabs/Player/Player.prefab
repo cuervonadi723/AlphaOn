@@ -112,9 +112,9 @@ GameObject:
   - component: {fileID: 8082682995789935595}
   - component: {fileID: 8082682995789935594}
   - component: {fileID: 8082682995789935599}
+  - component: {fileID: 8082682995789935604}
   - component: {fileID: 8082682995789935600}
   - component: {fileID: 8082682995789935602}
-  - component: {fileID: 8082682995789935604}
   - component: {fileID: 8082682995789935606}
   m_Layer: 0
   m_Name: Player
@@ -222,6 +222,28 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &8082682995789935604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8082682995789935593}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf2d60803bf0cae4eaeb4ad7ec574bf8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controller: {fileID: 8082682995789935599}
+  walkSpeed: 5
+  runSpeed: 8
+  gravity: -9.8
+  jumpForce: 2
+  groundCheck: {fileID: 8082682996342209903}
+  groundDistance: 0.3
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &8082682995789935600
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -257,31 +279,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 809d5cdce3494324683f3f2e8c800669, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hotbar: {fileID: 0}
   crafting: {fileID: 0}
   rango: 4
   interactuarTexto: {fileID: 0}
---- !u!114 &8082682995789935604
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8082682995789935593}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cf2d60803bf0cae4eaeb4ad7ec574bf8, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controller: {fileID: 8082682995789935599}
-  walkSpeed: 5
-  runSpeed: 8
-  gravity: -9.8
-  jumpForce: 2
-  groundCheck: {fileID: 8082682996342209903}
-  groundDistance: 0.3
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 8
 --- !u!114 &8082682995789935606
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -294,10 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1ea2cc38342ed6045a8433efcae4e14c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  resources: 000000000000000000000000
-  maxPiedra: 8
-  maxRama: 10
-  maxMadera: 6
+  recursos: []
 --- !u!1 &8082682996342209902
 GameObject:
   m_ObjectHideFlags: 0

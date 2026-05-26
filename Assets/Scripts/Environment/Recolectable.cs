@@ -14,6 +14,13 @@ public class Recolectable : MonoBehaviour
         if (agregado)
         {
             crafting.MostrarMensaje("Recolectaste " + tipo.ToString());
+
+           //agrego sonido
+            PlayerAudio audio = FindObjectOfType<PlayerAudio>();
+
+            if (audio != null)
+                audio.ReproducirRecolectar();
+
             Destroy(gameObject);
         }
         else

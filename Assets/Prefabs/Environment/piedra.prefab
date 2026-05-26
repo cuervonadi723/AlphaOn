@@ -343,8 +343,7 @@ GameObject:
   - component: {fileID: 5571741682826906518}
   - component: {fileID: 5663148453395947102}
   - component: {fileID: 6849275359228496316}
-  - component: {fileID: 8131827910455080871}
-  - component: {fileID: -8758163612348052033}
+  - component: {fileID: 2367951921170868331}
   m_Layer: 6
   m_Name: piedra
   m_TagString: Untagged
@@ -395,19 +394,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   tipo: 0
   cantidad: 1
---- !u!114 &8131827910455080871
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5051100509668299052}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 063145d1c024736459af217a354d79a5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!114 &-8758163612348052033
+--- !u!114 &2367951921170868331
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
