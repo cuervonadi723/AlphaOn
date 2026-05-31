@@ -5,15 +5,14 @@ using System.Collections;
 public class CraftingSystem : MonoBehaviour
 {
     public PlayerInventory inventory;
-    
-    
-    //enum paso 1
+
     public enum Crafteos
     {
         Hacha,
         Pico,
         Lanza,
-        Fogata
+        Fogata,
+        CamaImprovisada,
     }
 
     [System.Serializable]
@@ -32,59 +31,108 @@ public class CraftingSystem : MonoBehaviour
     [Header("UI")]
     public TextMeshProUGUI mensajeTexto;
 
-    [Header("Fogata")]
-    public GameObject fogataPrefab;
-    public GameObject fogataPreviewPrefab;
-    public LayerMask groundMask;
-    public Vector3 offsetFogata = Vector3.zero;
+    [Header("Tiempo de crafteo")]
+    public float tiempoCrafteo = 5f;
+    public TextMeshProUGUI textoContadorCrafteo;
 
-    public bool modoConstruccion = false;
-    public bool estaConstruyendo = false;
+    [Header("Objetos en casa")] //cambie de ponerlo libre por el mundo porque era muy complejo para mi y tenia muchos errores y deje asi de que esten en la casa, sigue esa idea de craftear pero ms controlado.
+    public GameObject fogataEnCasa;
+    public GameObject camaEnCasa;
+    private bool estaCrafteando = false;
 
-    private Vector3 posicionConstruccion;
-    private GameObject previewActual;
-
-
-    //un solo metodo para todo. paso 2
     public void Craftear(Crafteos crafteo)
+    {
+        if (estaCrafteando)
+        {
+            MostrarMensaje("Ya estás creando algo");
+            return;
+        }
+
+        StartCoroutine(CraftearConTiempo(crafteo));
+    }
+
+    IEnumerator CraftearConTiempo(Crafteos crafteo)
     {
         Receta receta = BuscarReceta(crafteo);
 
         if (receta == null)
         {
             MostrarMensaje("No existe la receta");
-            return;
+            yield break;
         }
 
         if (receta.crafteado && crafteo != Crafteos.Fogata)
         {
             MostrarMensaje("Ya tenés " + receta.nombre);
-            return;
+            yield break;
         }
 
         if (!PuedeCraftear(receta))
         {
             MostrarMensaje("Faltan materiales");
-            return;
+            yield break;
         }
+
+        estaCrafteando = true;
+
+        float tiempo = tiempoCrafteo;
+
+        while (tiempo > 0)
+        {
+            if (textoContadorCrafteo != null)
+                textoContadorCrafteo.text = "Creando... " + Mathf.CeilToInt(tiempo);
+
+            tiempo -= Time.deltaTime;
+            yield return null;
+        }
+
+        if (textoContadorCrafteo != null)
+            textoContadorCrafteo.text = "";
 
         GastarRecursos(receta);
 
         if (crafteo == Crafteos.Fogata)
         {
-            EmpezarColocarFogata();
-            return;
+            DarResultado(receta);
+
+            if (fogataEnCasa != null)
+                fogataEnCasa.SetActive(true);
+
+            estaCrafteando = false;
+            MostrarMensaje("Fogata preparada!");
+            yield break;
+        }
+
+        if (crafteo == Crafteos.CamaImprovisada)
+        {
+            DarResultado(receta);
+
+            if (camaEnCasa != null)
+                camaEnCasa.SetActive(true);
+
+            estaCrafteando = false;
+            MostrarMensaje("Cama improvisada preparada!");
+            yield break;
         }
 
         DarResultado(receta);
+
+        estaCrafteando = false;
+
         MostrarMensaje(receta.nombre + " creada!");
     }
 
-
-    // cambie esta parte para buscar por enum y no por nombre como lo tenia antes
     public Receta BuscarReceta(Crafteos crafteo)
     {
-        return recetas[(int)crafteo];
+        if (recetas == null)
+            return null;
+
+        int index = (int)crafteo;
+
+        if (index < 0 || index >= recetas.Length)
+            return null;
+
+        return recetas[index];
     }
 
     public KeyCode TeclaDeCrafteo(Crafteos crafteo)
@@ -94,6 +142,15 @@ public class CraftingSystem : MonoBehaviour
 
     bool PuedeCraftear(Receta receta)
     {
+        if (inventory == null)
+            return false;
+
+        if (receta.recursos.Length != receta.cantidades.Length)
+        {
+            MostrarMensaje("Error en receta: recursos y cantidades no coinciden");
+            return false;
+        }
+
         for (int i = 0; i < receta.recursos.Length; i++)
         {
             if (!inventory.HasResource(receta.recursos[i], receta.cantidades[i]))
@@ -116,17 +173,34 @@ public class CraftingSystem : MonoBehaviour
         receta.crafteado = true;
     }
 
-
-    // bool agregado como era el paso 5
     public bool EstaCrafteado(Crafteos crafteo)
     {
-        return recetas[(int)crafteo].crafteado;
+        Receta receta = BuscarReceta(crafteo);
+
+        if (receta == null)
+            return false;
+
+        return receta.crafteado;
     }
 
     public void MostrarMensaje(string mensaje)
     {
-        StopAllCoroutines();
+        if (mensajeTexto == null)
+            return;
+
+        StopCoroutineSafe();
         StartCoroutine(MostrarMensajeTemporal(mensaje));
+    }
+
+    void StopCoroutineSafe()
+    {
+        StopAllCoroutines();
+
+        if (estaCrafteando)
+            estaCrafteando = false;
+
+        if (textoContadorCrafteo != null)
+            textoContadorCrafteo.text = "";
     }
 
     IEnumerator MostrarMensajeTemporal(string mensaje)
@@ -134,79 +208,5 @@ public class CraftingSystem : MonoBehaviour
         mensajeTexto.text = mensaje;
         yield return new WaitForSeconds(5f);
         mensajeTexto.text = "";
-    }
-
-    public void EmpezarColocarFogata()
-    {
-        if (modoConstruccion)
-            return;
-
-        if (fogataPrefab == null)
-        {
-            MostrarMensaje("Falta asignar prefab");
-            return;
-        }
-
-        if (fogataPreviewPrefab == null)
-        {
-            MostrarMensaje("Falta asignar preview");
-            return;
-        }
-
-        modoConstruccion = true;
-        estaConstruyendo = true;
-
-        previewActual = Instantiate(
-            fogataPreviewPrefab,
-            Camera.main.transform.position + Camera.main.transform.forward * 3f,
-            Quaternion.identity
-        );
-
-        previewActual.SetActive(true);
-    }
-
-    void ColocarFogata()
-    {
-        Instantiate(fogataPrefab, posicionConstruccion, Quaternion.identity);
-
-        if (previewActual != null)
-            Destroy(previewActual);
-
-        modoConstruccion = false;
-        estaConstruyendo = false;
-
-        MostrarMensaje("Fogata colocada!");
-    }
-
-    public void CancelarColocacion()
-    {
-        if (previewActual != null)
-            Destroy(previewActual);
-
-        modoConstruccion = false;
-        estaConstruyendo = false;
-
-        MostrarMensaje("Construcción cancelada");
-    }
-
-    void Update()
-    {
-        if (modoConstruccion && previewActual != null)
-        {
-            Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, 10f, groundMask))
-            {
-                posicionConstruccion = hit.point + offsetFogata;
-                previewActual.transform.position = posicionConstruccion;
-            }
-
-            if (Input.GetMouseButtonDown(0))
-                ColocarFogata();
-
-            if (Input.GetMouseButtonDown(1))
-                CancelarColocacion();
-        }
     }
 }

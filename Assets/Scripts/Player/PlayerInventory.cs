@@ -9,7 +9,11 @@ public class PlayerInventory : MonoBehaviour
         Madera,
         Tela,
         Aloe,
-        Venda
+        Venda,
+        BidonVacio,
+        BidonLleno,
+        Fusibles,
+        Hojas,
     }
 
     [System.Serializable]

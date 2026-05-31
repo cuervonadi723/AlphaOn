@@ -10,10 +10,11 @@ public class Tree : MonoBehaviour
     public ParticleSystem particulasHojas;
 
     [Header("Recursos")]
-    public int golpesNecesarios = 3;
+    public int golpesNecesarios = 8;
     private int golpesActuales = 0;
 
-    public int maderaQueDa = 3;
+    public int maderaQueDa = 4;
+    public int hojasQueDa = 5;
 
     private AudioSource audioSource;
 
@@ -69,7 +70,22 @@ public class Tree : MonoBehaviour
 
         if (golpesActuales >= golpesNecesarios)
         {
-            crafting.inventory.AddResource(PlayerInventory.TipoRecurso.Madera, maderaQueDa);
+            bool agregoMadera = crafting.inventory.AddResource(PlayerInventory.TipoRecurso.Madera, maderaQueDa);
+            bool agregoHojas = crafting.inventory.AddResource(PlayerInventory.TipoRecurso.Hojas, hojasQueDa);
+
+            if (agregoMadera || agregoHojas)
+            {
+                crafting.MostrarMensaje("Recolectaste madera y hojas");
+            }
+            else
+            {
+                crafting.MostrarMensaje("No puedo cargar más recursos");
+            }
+
+            MochilaUI mochila = FindObjectOfType<MochilaUI>();
+            if (mochila != null)
+                mochila.ActualizarUI();
+
             Destroy(gameObject);
         }
     }

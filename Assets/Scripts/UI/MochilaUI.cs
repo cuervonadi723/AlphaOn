@@ -2,6 +2,8 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+
+
 public class MochilaUI : MonoBehaviour
 {
     public enum ItemID
@@ -14,7 +16,11 @@ public class MochilaUI : MonoBehaviour
         Venda,
         Hacha,
         Pico,
-        Lanza
+        Lanza,
+        BidonVacio,
+        BidonLleno,
+        Fusibles,
+        Hojas,
     }
 
     [System.Serializable]
@@ -47,7 +53,7 @@ public class MochilaUI : MonoBehaviour
     [Header("Hotbar visible abajo")]
     public SlotMochilaUI[] slotsHotbarVisible;
 
-    [Header("Peso")] //a futuro q puedas llevar hasta cierto peso
+    [Header("Peso")]
     public TextMeshProUGUI pesoTexto;
     public Image barraPeso;
     public float pesoMaximo = 50f;
@@ -58,10 +64,15 @@ public class MochilaUI : MonoBehaviour
     [Header("Animaciones herramientas")]
     public MonoBehaviour[] scriptsAnimacionesHerramientas;
 
-    [Header("Control jugador")] //desactivar movimientos y mouse en game
+    [Header("Control jugador")]
     public MonoBehaviour scriptMovimiento;
     public MonoBehaviour scriptCamara;
     public PlayerInput playerInput;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip sonidoAbrir;
+    public AudioClip sonidoCerrar;
 
     public bool mochilaDesbloqueada = false;
     public static bool MochilaAbiertaGlobal = false;
@@ -76,9 +87,12 @@ public class MochilaUI : MonoBehaviour
     private int indexSeleccionado = -1;
     private ItemID itemSeleccionado;
 
+    private UIFade fadeMochila;
 
     void Start()
     {
+        fadeMochila = mochilaPanel.GetComponent<UIFade>();
+
         inventario = new ItemID?[12];
         hotbar = new ItemID?[6];
 
@@ -95,12 +109,32 @@ public class MochilaUI : MonoBehaviour
         if (mochilaDesbloqueada && Input.GetKeyDown(KeyCode.Tab))
         {
             mochilaAbierta = !mochilaAbierta;
+            if (mochilaAbierta)
+                ReproducirSonido(sonidoAbrir);
+            else
+                ReproducirSonido(sonidoCerrar);
+
             MochilaAbiertaGlobal = mochilaAbierta;
 
             if (mochilaPanel != null)
-                mochilaPanel.SetActive(mochilaAbierta);
+            {
+                if (fadeMochila != null)
+                {
+                    if (mochilaAbierta)
+                        fadeMochila.Mostrar();
+                    else
+                        fadeMochila.Ocultar();
+                }
+                else
+                {
+                    mochilaPanel.SetActive(mochilaAbierta);
+                }
+            }
 
-            Cursor.lockState = mochilaAbierta ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.lockState = mochilaAbierta
+                ? CursorLockMode.None
+                : CursorLockMode.Locked;
+
             Cursor.visible = mochilaAbierta;
 
             if (scriptMovimiento != null)
@@ -120,6 +154,35 @@ public class MochilaUI : MonoBehaviour
 
             if (mochilaAbierta)
                 ActualizarUI();
+        }
+
+        if (mochilaAbierta && Input.GetKeyDown(KeyCode.Escape))
+        {
+            mochilaAbierta = false;
+            MochilaAbiertaGlobal = false;
+
+            if (fadeMochila != null)
+                fadeMochila.Ocultar();
+            else if (mochilaPanel != null)
+                mochilaPanel.SetActive(false);
+
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+
+            if (scriptMovimiento != null)
+                scriptMovimiento.enabled = true;
+
+            if (scriptCamara != null)
+                scriptCamara.enabled = true;
+
+            if (playerInput != null)
+                playerInput.enabled = true;
+
+            for (int i = 0; i < scriptsAnimacionesHerramientas.Length; i++)
+            {
+                if (scriptsAnimacionesHerramientas[i] != null)
+                    scriptsAnimacionesHerramientas[i].enabled = true;
+            }
         }
     }
 
@@ -247,7 +310,9 @@ public class MochilaUI : MonoBehaviour
         if (!esHotbar && (index < 0 || index >= inventario.Length))
             return;
 
-        ItemID? itemClickeado = esHotbar ? hotbar[index] : inventario[index];
+        ItemID? itemClickeado = esHotbar
+            ? hotbar[index]
+            : inventario[index];
 
         if (!haySeleccion)
         {
@@ -263,7 +328,8 @@ public class MochilaUI : MonoBehaviour
             return;
         }
 
-        if (seleccionDesdeHotbar == esHotbar && indexSeleccionado == index)
+        if (seleccionDesdeHotbar == esHotbar &&
+            indexSeleccionado == index)
         {
             CancelarSeleccion();
             ActualizarSeleccionVisual();
@@ -337,6 +403,7 @@ public class MochilaUI : MonoBehaviour
             else
                 slotsHotbarVisible[i].Limpiar();
         }
+
         if (hotbarUI != null)
             hotbarUI.RecibirHotbar(hotbar);
     }
@@ -384,13 +451,21 @@ public class MochilaUI : MonoBehaviour
 
         if (seleccionDesdeHotbar)
         {
-            if (indexSeleccionado >= 0 && indexSeleccionado < slotsHotbar.Length && slotsHotbar[indexSeleccionado] != null)
+            if (indexSeleccionado >= 0 &&
+                indexSeleccionado < slotsHotbar.Length &&
+                slotsHotbar[indexSeleccionado] != null)
+            {
                 slotsHotbar[indexSeleccionado].MarcarSeleccionado(true);
+            }
         }
         else
         {
-            if (indexSeleccionado >= 0 && indexSeleccionado < slotsInventario.Length && slotsInventario[indexSeleccionado] != null)
+            if (indexSeleccionado >= 0 &&
+                indexSeleccionado < slotsInventario.Length &&
+                slotsInventario[indexSeleccionado] != null)
+            {
                 slotsInventario[indexSeleccionado].MarcarSeleccionado(true);
+            }
         }
     }
 
@@ -417,7 +492,13 @@ public class MochilaUI : MonoBehaviour
         }
 
         if (pesoTexto != null)
-            pesoTexto.text = peso.ToString("0.0") + " / " + pesoMaximo.ToString("0") + " KG";
+        {
+            pesoTexto.text =
+                peso.ToString("0.0") +
+                " / " +
+                pesoMaximo.ToString("0") +
+                " KG";
+        }
 
         if (barraPeso != null)
             barraPeso.fillAmount = Mathf.Clamp01(peso / pesoMaximo);
@@ -432,5 +513,11 @@ public class MochilaUI : MonoBehaviour
         }
 
         return null;
+    }
+
+    void ReproducirSonido(AudioClip clip)
+    {
+        if (audioSource != null && clip != null)
+            audioSource.PlayOneShot(clip);
     }
 }

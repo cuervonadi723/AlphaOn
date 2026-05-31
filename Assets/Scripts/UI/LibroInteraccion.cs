@@ -5,6 +5,8 @@ public class LibroInteraccion : MonoBehaviour
     public GameObject textoE;
 
     public LibroUI libroUI;
+    public MapaUI mapaUI;
+    public NotaUI notaUI;
 
     public UnlockObstacle obstaculo;
 
@@ -24,7 +26,14 @@ public class LibroInteraccion : MonoBehaviour
     {
         if (jugadorCerca && Input.GetKeyDown(KeyCode.E) && !yaLeido)
         {
-            libroUI.DesbloquearLibro();
+            if (libroUI != null)
+                libroUI.DesbloquearLibro();
+
+            if (mapaUI != null)
+                mapaUI.DesbloquearMapa();
+
+            if (notaUI != null)
+                notaUI.MostrarNota();
 
             yaLeido = true;
 

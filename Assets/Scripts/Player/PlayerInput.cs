@@ -25,15 +25,7 @@ public class PlayerInput : MonoBehaviour
 
         if (crafting == null) return;
 
-        if (crafting.estaConstruyendo)
-        {
-            if (Input.GetKeyDown(KeyCode.H))
-            {
-                crafting.CancelarColocacion();
-            }
 
-            return;
-        }
 
         for (int i = 0; i < crafting.recetas.Length; i++)
         {
@@ -49,7 +41,7 @@ public class PlayerInput : MonoBehaviour
             UsarHerramienta();
     }
 
-    void Detectar()
+    void Detectar()  //coloco los objetos interactuables, medio logico el comentario pero me sirve p futuro. 
     {
         if (interactuarTexto == null) return;
 
@@ -108,13 +100,69 @@ public class PlayerInput : MonoBehaviour
                 interactuarTexto.text = "E: beber";
                 return;
             }
+
+            NotaInteraccion nota = hit.collider.GetComponentInParent<NotaInteraccion>();
+            if (nota != null)
+            {
+                interactuarTexto.gameObject.SetActive(true);
+                interactuarTexto.text = "E: leer nota";
+                return;
+            }
+
+            GeneradorInteraccion generador = hit.collider.GetComponentInParent<GeneradorInteraccion>();
+            if (generador != null)
+            {
+                interactuarTexto.gameObject.SetActive(true);
+                interactuarTexto.text = generador.GetTexto();
+                return;
+            }
+
+            PanelElectricoInteraccion panel = hit.collider.GetComponentInParent<PanelElectricoInteraccion>();
+            if (panel != null)
+            {
+                interactuarTexto.gameObject.SetActive(true);
+                interactuarTexto.text = panel.GetTexto();
+                return;
+            }
+
+            BidonInteraccion bidon = hit.collider.GetComponentInParent<BidonInteraccion>();
+            if (bidon != null)
+            {
+                interactuarTexto.gameObject.SetActive(true);
+                interactuarTexto.text = bidon.GetTexto();
+                return;
+            }
+
+            CamionetaInteraccion camioneta = hit.collider.GetComponentInParent<CamionetaInteraccion>();
+            if (camioneta != null)
+            {
+                string texto = camioneta.GetTexto();
+
+                if (texto != "")
+                {
+                    interactuarTexto.gameObject.SetActive(true);
+                    interactuarTexto.text = texto;
+                    return;
+                }
+            }
+            //MIMIR
+            DormirInteraccion cama = hit.collider.GetComponentInParent<DormirInteraccion>();
+            if (cama != null)
+            {
+                interactuarTexto.gameObject.SetActive(true);
+                interactuarTexto.text = cama.GetTexto();
+                return;
+            }
+
+
         }
 
         interactuarTexto.gameObject.SetActive(false);
     }
 
-    void Interactuar()
+    void Interactuar() //coloco los objetos interactuables, medio logico el comentario pero me sirve p futuro.
     {
+        Debug.Log("APRETE E");
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
         if (Physics.Raycast(ray, out hit, rango))
@@ -146,6 +194,51 @@ public class PlayerInput : MonoBehaviour
                 agua.Beber(GetComponent<PlayerStats>());
                 return;
             }
+
+            NotaInteraccion nota = hit.collider.GetComponentInParent<NotaInteraccion>();
+            if (nota != null)
+            {
+                nota.Leer();
+                return;
+            }
+
+            GeneradorInteraccion generador = hit.collider.GetComponentInParent<GeneradorInteraccion>();
+
+            if (generador != null)
+            {
+                generador.Revisar(crafting);
+                return;
+            }
+
+            PanelElectricoInteraccion panel = hit.collider.GetComponentInParent<PanelElectricoInteraccion>();
+            if (panel != null)
+            {
+                panel.Revisar(crafting);
+                return;
+            }
+
+            BidonInteraccion bidon = hit.collider.GetComponentInParent<BidonInteraccion>();
+            if (bidon != null)
+            {
+                bidon.Tomar(crafting);
+                return;
+            }
+
+            CamionetaInteraccion camioneta = hit.collider.GetComponentInParent<CamionetaInteraccion>();
+            if (camioneta != null)
+            {
+                camioneta.Revisar(crafting);
+                return;
+            }
+            //MIMIR
+            DormirInteraccion cama = hit.collider.GetComponentInParent<DormirInteraccion>();
+            if (cama != null)
+            {
+                cama.Dormir();
+                return;
+            }
+
+
         }
     }
 
