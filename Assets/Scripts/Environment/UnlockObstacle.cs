@@ -2,37 +2,82 @@ using UnityEngine;
 
 public class UnlockObstacle : MonoBehaviour
 {
-    [Header("Requisitos")]
-    public int maderaNecesaria = 3;
-    public int piedraNecesaria = 3;
-
     [Header("Libro")]
     public LibroUI libroUI;
 
-    public void IntentarDesbloquear(CraftingSystem crafting)
+    [Header("Golpes")]
+    public int golpesNecesarios = 3;
+    private int golpesActuales = 0;
+
+    [Header("Audio")]
+    public AudioClip sonidoGolpe;
+    private AudioSource audioSource;
+
+    [Header("Particulas")]
+    public ParticleSystem particulasMadera;
+
+    void Start()
+    {
+        PlayerInput player = FindObjectOfType<PlayerInput>();
+
+        if (player != null)
+            audioSource = player.GetComponent<AudioSource>();
+    }
+
+    public void IntentarDesbloquear(CraftingSystem crafting, RaycastHit hit)
     {
         if (libroUI != null && !libroUI.libroDesbloqueado)
         {
             if (crafting != null)
-                crafting.MostrarMensaje("Primero debería revisar el libro de supervivencia");
+                crafting.MostrarMensaje("Primero debería revisar el libro de supervivencia.");
 
             return;
         }
 
-        if (crafting == null || crafting.inventory == null) return;
+        if (crafting == null)
+            return;
 
-        bool tieneMadera = crafting.inventory.HasResource(PlayerInventory.TipoRecurso.Madera, maderaNecesaria);
-        bool tienePiedra = crafting.inventory.HasResource(PlayerInventory.TipoRecurso.Piedra, piedraNecesaria);
-
-        if (!tieneMadera || !tienePiedra)
+        if (!crafting.EstaCrafteado(CraftingSystem.Crafteos.Hacha))
         {
-            crafting.MostrarMensaje("Necesitas " + maderaNecesaria + " madera y " + piedraNecesaria + " piedra");
+            crafting.MostrarMensaje("Necesito un hacha para romper esto.");
             return;
         }
 
-        crafting.inventory.RemoveResource(PlayerInventory.TipoRecurso.Madera, maderaNecesaria);
-        crafting.inventory.RemoveResource(PlayerInventory.TipoRecurso.Piedra, piedraNecesaria);
+        if (audioSource != null && sonidoGolpe != null)
+        {
+            audioSource.pitch = Random.Range(0.7f, 1.2f);
+            audioSource.volume = Random.Range(0.5f, 0.7f);
+            audioSource.PlayOneShot(sonidoGolpe);
+        }
 
+        if (particulasMadera != null)
+        {
+            ParticleSystem p = Instantiate(
+                particulasMadera,
+                hit.point,
+                Quaternion.LookRotation(hit.normal)
+            );
+
+            Destroy(p.gameObject, 2f);
+        }
+
+        golpesActuales++;
+
+        if (golpesActuales < golpesNecesarios)
+        {
+            crafting.MostrarMensaje("Golpeando bloqueo... (" + golpesActuales + "/" + golpesNecesarios + ")");
+            return;
+        }
+
+        crafting.MostrarMensaje("Rompiste el bloqueo con el hacha.");
         Destroy(gameObject);
+    }
+
+    public string GetTexto(CraftingSystem crafting)
+    {
+        if (crafting == null || !crafting.EstaCrafteado(CraftingSystem.Crafteos.Hacha))
+            return "Necesitás hacha";
+
+        return "Romper bloqueo (" + golpesActuales + "/" + golpesNecesarios + ")";
     }
 }

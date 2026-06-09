@@ -5,12 +5,14 @@ using UnityEngine;
 public class MesaTrabajoInteraccion : MonoBehaviour
 {
     public GameObject textoE;
-
     public CraftingSystem crafting;
+    public LibroCrafteoUI libroCrafteoUI;
+    public PensamientoJugador pensamiento;
 
     public bool tieneEnergia = false;
 
     private bool jugadorCerca = false;
+    private bool yaActualizoLibro = false;
 
     void Start()
     {
@@ -37,6 +39,25 @@ public class MesaTrabajoInteraccion : MonoBehaviour
         if (!tieneEnergia)
         {
             crafting.MostrarMensaje("No tiene energía...");
+            return;
+        }
+
+        if (!yaActualizoLibro)
+        {
+            yaActualizoLibro = true;
+
+            if (libroCrafteoUI != null)
+                libroCrafteoUI.DesbloquearRecetasAvanzadas();
+
+            crafting.MostrarMensaje("La mesa de trabajo volvió a funcionar.");
+
+            if (pensamiento != null)
+            {
+                pensamiento.MostrarPensamiento(
+                    "Debería revisar el libro. Tal vez aparecieron nuevas recetas."
+                );
+            }
+
             return;
         }
 

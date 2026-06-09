@@ -10,6 +10,9 @@ public class LibroCrafteoUI : MonoBehaviour
     [Header("Paginas")]
     public GameObject[] paginas;
 
+    [Header("Recetas avanzadas")]
+    public bool recetasAvanzadasDesbloqueadas = false;
+
     [Header("Crafting")]
     public CraftingSystem crafting;
     public CraftingSystem.Crafteos[] crafteosPorPagina;
@@ -157,6 +160,16 @@ public class LibroCrafteoUI : MonoBehaviour
 
         CraftingSystem.Crafteos crafteo = crafteosPorPagina[paginaActual];
         CraftingSystem.Receta receta = crafting.BuscarReceta(crafteo);
+        if (!recetasAvanzadasDesbloqueadas &&
+    (crafteo == CraftingSystem.Crafteos.Fogata ||
+     crafteo == CraftingSystem.Crafteos.CamaImprovisada))
+        {
+            if (textoEstado != null)
+                textoEstado.text = "RECETA BLOQUEADA";
+
+            return;
+        }
+
 
         if (receta == null)
             return;
@@ -219,20 +232,25 @@ public class LibroCrafteoUI : MonoBehaviour
         bool yaCreado = crafting.EstaCrafteado(crafteo);
         bool puede = PuedeCrear(receta);
 
+        bool recetaBloqueada =
+    !recetasAvanzadasDesbloqueadas &&
+    (crafteo == CraftingSystem.Crafteos.Fogata ||
+     crafteo == CraftingSystem.Crafteos.CamaImprovisada);
+
         if (imagenYaCreado != null)
             imagenYaCreado.SetActive(yaCreado);
 
         if (botonCrear != null)
         {
-            botonCrear.interactable = !yaCreado;
+            botonCrear.interactable = !yaCreado && !recetaBloqueada;
 
             ColorBlock colors = botonCrear.colors;
 
-            colors.normalColor = (!yaCreado && puede)
+            colors.normalColor = (!yaCreado && puede && !recetaBloqueada)
                 ? Color.white
                 : new Color(0.45f, 0.45f, 0.45f, 1f);
 
-            colors.highlightedColor = (!yaCreado && puede)
+            colors.highlightedColor = (!yaCreado && puede && !recetaBloqueada)
                 ? new Color(0.9f, 0.85f, 0.7f, 1f)
                 : new Color(0.45f, 0.45f, 0.45f, 1f);
 
@@ -275,5 +293,11 @@ public class LibroCrafteoUI : MonoBehaviour
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+    }
+
+    public void DesbloquearRecetasAvanzadas()
+    {
+        recetasAvanzadasDesbloqueadas = true;
+        ActualizarEstadoPagina();
     }
 }

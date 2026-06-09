@@ -18,8 +18,11 @@ public class DormirInteraccion : MonoBehaviour
     [Header("Luz opcional")]
     public Light luzSol;
     public float intensidadDia = 1f;
-
     private bool durmiendo = false;
+
+    [Header("Comidaaa")]
+    public PlayerStats playerStats;
+    public float comidaNecesaria = 100f;
 
     public string GetTexto()
     {
@@ -40,6 +43,21 @@ public class DormirInteraccion : MonoBehaviour
         if (fogataEnCasa == null || !fogataEnCasa.activeSelf)
         {
             crafting.MostrarMensaje("Hace demasiado frío. Necesito una fogata antes de dormir.");
+            return;
+        }
+
+        if (!crafting.EstaCrafteado(CraftingSystem.Crafteos.Lanza))
+        {
+            crafting.MostrarMensaje("No me siento seguro pasando la noche sin algún tipo de arma.");
+            return;
+        }
+
+        if (playerStats == null)
+            playerStats = FindObjectOfType<PlayerStats>();
+
+        if (playerStats != null && playerStats.food != null && playerStats.food.current < comidaNecesaria)
+        {
+            crafting.MostrarMensaje("Tengo hambre. Ignacio marcó algunos lugares en el mapa, tal vez encuentre algo útil.");
             return;
         }
 
@@ -84,7 +102,7 @@ public class DormirInteraccion : MonoBehaviour
         }
 
         if (crafting != null)
-            crafting.MostrarMensaje("Ya descansé. Debería ir al muelle.");
+            crafting.MostrarMensaje("Finalmente... voy a salir de aquí.");
 
         durmiendo = false;
     }

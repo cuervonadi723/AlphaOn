@@ -7,6 +7,8 @@ public class RadioInteraccion : MonoBehaviour
 
     public bool antenaReparada = false;
     public bool yaEscuchoMuelle = false;
+    public PensamientoJugador pensamiento;
+    private bool yaPensoAntena = false; 
 
     private bool jugadorCerca = false;
 
@@ -32,15 +34,20 @@ public class RadioInteraccion : MonoBehaviour
     {
         if (!antenaReparada)
         {
-            crafting.MostrarMensaje(
-                "Radio: ssszzzz... Ignacio, fui a revisar la antena. Sin señal no vamos a salir de acá."
-            );
+            crafting.MostrarMensaje("Radio: ssszzzz... sin señal... solo se escucha estática...");
+
+            if (!yaPensoAntena && pensamiento != null)
+            {
+                pensamiento.MostrarPensamiento("Tal vez Ignacio tenía razón. Debería revisar la antena.");
+                yaPensoAntena = true;
+            }
+
             return;
         }
 
         if (!yaEscuchoMuelle)
         {
-            crafting.MostrarMensaje("Radio: szzszz... señal débil... el muelle... hay algo en la casa del muelle...");
+            crafting.MostrarMensaje("Radio: ...¿me recibe?... aquí central de rescate... señal recuperada... manténgase en la zona... enviaremos ayuda al amanecer...");
 
             yaEscuchoMuelle = true;
 
@@ -60,8 +67,12 @@ public class RadioInteraccion : MonoBehaviour
         if (luzSol != null)
             luzSol.intensity = intensidadNoche;
 
-        if (crafting != null)
-            crafting.MostrarMensaje("Está oscureciendo... necesito hacer una fogata y preparar un lugar para dormir. Mañana voy a poder seguir hasta el muelle.");
+        if (pensamiento != null)
+        {
+            pensamiento.MostrarPensamiento(
+                "Está oscureciendo... necesito hacer una fogata y preparar un lugar para dormir."
+            );
+        }
     }
 
     public void ActivarSenal()

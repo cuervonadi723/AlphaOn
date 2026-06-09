@@ -21,6 +21,7 @@ public class MochilaUI : MonoBehaviour
         BidonLleno,
         Fusibles,
         Hojas,
+        LataComida,
     }
 
     [System.Serializable]

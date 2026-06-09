@@ -13,6 +13,7 @@ public class CraftingSystem : MonoBehaviour
         Lanza,
         Fogata,
         CamaImprovisada,
+        Venda,
     }
 
     [System.Serializable]
@@ -90,6 +91,19 @@ public class CraftingSystem : MonoBehaviour
             textoContadorCrafteo.text = "";
 
         GastarRecursos(receta);
+
+        if (crafteo == Crafteos.Venda)
+        {
+            inventory.AddResource(PlayerInventory.TipoRecurso.Venda, 1);
+
+            MochilaUI mochila = FindObjectOfType<MochilaUI>();
+            if (mochila != null)
+                mochila.ActualizarUI();
+
+            estaCrafteando = false;
+            MostrarMensaje("Venda creada!");
+            yield break;
+        }
 
         if (crafteo == Crafteos.Fogata)
         {

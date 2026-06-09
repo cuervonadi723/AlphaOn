@@ -77,11 +77,7 @@ public class PlayerInput : MonoBehaviour
             if (obstaculo != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-
-                interactuarTexto.text = "E: despejar ("
-                    + obstaculo.maderaNecesaria + " madera, "
-                    + obstaculo.piedraNecesaria + " piedra)";
-
+                interactuarTexto.text = obstaculo.GetTexto(crafting);
                 return;
             }
 
@@ -89,7 +85,7 @@ public class PlayerInput : MonoBehaviour
             if (comida != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = "E: comer";
+                interactuarTexto.text = "E: recoger lata";
                 return;
             }
 
@@ -174,17 +170,10 @@ public class PlayerInput : MonoBehaviour
                 return;
             }
 
-            UnlockObstacle obstaculo = hit.collider.GetComponentInParent<UnlockObstacle>();
-            if (obstaculo != null)
-            {
-                obstaculo.IntentarDesbloquear(crafting);
-                return;
-            }
-
             FoodItem comida = hit.collider.GetComponentInParent<FoodItem>();
             if (comida != null)
             {
-                comida.Comer(GetComponent<PlayerStats>());
+                comida.Recolectar(crafting);
                 return;
             }
 
@@ -244,10 +233,26 @@ public class PlayerInput : MonoBehaviour
 
     void UsarHerramienta()
     {
+
+        if (hotbar != null && hotbar.SlotTieneItem(MochilaUI.ItemID.Venda))
+        {
+            UsarVenda();
+            return;
+        }
+
+        if (hotbar != null && hotbar.SlotTieneItem(MochilaUI.ItemID.LataComida))
+        {
+            UsarLataComida();
+            return;
+        }
+
+
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
 
         if (Physics.Raycast(ray, out hit, rango))
         {
+            
+
             RockNode roca = hit.collider.GetComponentInParent<RockNode>();
             if (roca != null)
             {
@@ -278,6 +283,78 @@ public class PlayerInput : MonoBehaviour
 
                 return;
             }
+
+            UnlockObstacle obstaculo = hit.collider.GetComponentInParent<UnlockObstacle>();
+
+            if (obstaculo != null)
+            {
+                if (hotbar != null && hotbar.SlotTieneItem(MochilaUI.ItemID.Hacha))
+                    obstaculo.IntentarDesbloquear(crafting, hit);
+                else
+                    crafting.MostrarMensaje("Necesito tener el hacha en la mano");
+
+                return;
+            }
         }
+    }
+    void UsarVenda()
+    {
+        PlayerStats stats = GetComponent<PlayerStats>();
+        PlayerInventory inventario = GetComponent<PlayerInventory>();
+
+        if (stats == null || inventario == null)
+            return;
+
+        if (!inventario.HasResource(PlayerInventory.TipoRecurso.Venda, 1))
+        {
+            crafting.MostrarMensaje("No tengo vendas.");
+            return;
+        }
+
+        if (stats.health >= stats.maxHealth)
+        {
+            crafting.MostrarMensaje("Ya estoy bien.");
+            return;
+        }
+
+        stats.health = stats.maxHealth;
+
+        inventario.RemoveResource(PlayerInventory.TipoRecurso.Venda, 1);
+
+        MochilaUI mochila = FindObjectOfType<MochilaUI>();
+        if (mochila != null)
+            mochila.ActualizarUI();
+
+        crafting.MostrarMensaje("Usaste una venda.");
+    }
+
+    void UsarLataComida()
+    {
+        PlayerStats stats = GetComponent<PlayerStats>();
+        PlayerInventory inventario = GetComponent<PlayerInventory>();
+
+        if (stats == null || inventario == null)
+            return;
+
+        if (!inventario.HasResource(PlayerInventory.TipoRecurso.LataComida, 1))
+        {
+            crafting.MostrarMensaje("No tengo comida.");
+            return;
+        }
+
+        if (stats.food.current >= 100f)
+        {
+            crafting.MostrarMensaje("No tengo hambre.");
+            return;
+        }
+
+        stats.food.Add(30f);
+        inventario.RemoveResource(PlayerInventory.TipoRecurso.LataComida, 1);
+
+        MochilaUI mochila = FindObjectOfType<MochilaUI>();
+        if (mochila != null)
+            mochila.ActualizarUI();
+
+        crafting.MostrarMensaje("Comiste una lata de comida.");
     }
 }

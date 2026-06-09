@@ -6,6 +6,7 @@ public class PanelElectricoInteraccion : MonoBehaviour
 {
     public RadioInteraccion radio;
     public MesaTrabajoInteraccion mesaTrabajo;
+    public PensamientoJugador pensamiento;
 
     private bool sistemaActivado = false;
 
@@ -32,11 +33,6 @@ public class PanelElectricoInteraccion : MonoBehaviour
             return;
         }
 
-        if (!ProgresoAntena.instance.generadorEncendido)
-        {
-            crafting.MostrarMensaje("Los fusibles están instalados, pero el generador todavía no está encendido.");
-            return;
-        }
 
         if (!sistemaActivado)
         {
@@ -48,7 +44,13 @@ public class PanelElectricoInteraccion : MonoBehaviour
             if (mesaTrabajo != null)
                 mesaTrabajo.ActivarEnergia();
 
-            crafting.MostrarMensaje("Activaste el sistema. Tal vez ahora funcione la radio de la casa.");
+            if (pensamiento != null)
+            {
+                pensamiento.MostrarPensamiento(
+                    "Ahora que la antena parece funcionar, tal vez se solucionó lo de la radio."
+                );
+            }
+
             return;
         }
 

@@ -14,6 +14,7 @@ public class PlayerInventory : MonoBehaviour
         BidonLleno,
         Fusibles,
         Hojas,
+        LataComida,
     }
 
     [System.Serializable]

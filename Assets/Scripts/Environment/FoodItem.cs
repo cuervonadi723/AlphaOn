@@ -2,14 +2,28 @@ using UnityEngine;
 
 public class FoodItem : MonoBehaviour
 {
-    public float comidaQueDa = 30f;
+    public int cantidad = 1;
 
-    public void Comer(PlayerStats stats)
+    public void Recolectar(CraftingSystem crafting)
     {
-        if (stats == null || stats.food == null) return;
+        if (crafting == null || crafting.inventory == null)
+            return;
 
-        stats.food.Add(comidaQueDa);
+        bool agregado = crafting.inventory.AddResource(PlayerInventory.TipoRecurso.LataComida, cantidad);
 
-        Destroy(gameObject);
+        if (agregado)
+        {
+            crafting.MostrarMensaje("Agarraste una lata de comida.");
+
+            MochilaUI mochila = FindObjectOfType<MochilaUI>();
+            if (mochila != null)
+                mochila.ActualizarUI();
+
+            Destroy(gameObject);
+        }
+        else
+        {
+            crafting.MostrarMensaje("No puedo cargar más latas.");
+        }
     }
 }

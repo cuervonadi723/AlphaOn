@@ -15,6 +15,7 @@ public class GeneradorInteraccion : MonoBehaviour
             }
 
             ProgresoAntena.instance.generadorConCombustible = true;
+            ProgresoAntena.instance.generadorEncendido = true;
             ProgresoAntena.instance.tieneCombustible = false;
 
             crafting.inventory.RemoveResource(PlayerInventory.TipoRecurso.BidonLleno, 1);
@@ -23,20 +24,7 @@ public class GeneradorInteraccion : MonoBehaviour
             if (mochila != null)
                 mochila.ActualizarUI();
 
-            crafting.MostrarMensaje("Cargaste combustible en el generador.");
-            return;
-        }
-
-        if (!ProgresoAntena.instance.fusiblesInstalados)
-        {
-            crafting.MostrarMensaje("El generador tiene combustible, pero el tablero sigue sin fusibles.");
-            return;
-        }
-
-        if (!ProgresoAntena.instance.generadorEncendido)
-        {
-            ProgresoAntena.instance.generadorEncendido = true;
-            crafting.MostrarMensaje("Generador encendido. La antena ya debería tener energía.");
+            crafting.MostrarMensaje("Cargaste combustible y encendiste el generador.");
             return;
         }
 
@@ -52,12 +40,6 @@ public class GeneradorInteraccion : MonoBehaviour
 
             return "E: revisar generador";
         }
-
-        if (!ProgresoAntena.instance.fusiblesInstalados)
-            return "E: revisar generador";
-
-        if (!ProgresoAntena.instance.generadorEncendido)
-            return "E: encender generador";
 
         return "E: revisar generador";
     }

@@ -7,7 +7,7 @@ public class LibroInteraccion : MonoBehaviour
     public LibroUI libroUI;
     public MapaUI mapaUI;
     public NotaUI notaUI;
-
+    public PensamientoJugador pensamiento;
     public UnlockObstacle obstaculo;
 
     private bool jugadorCerca = false;
@@ -34,6 +34,11 @@ public class LibroInteraccion : MonoBehaviour
 
             if (notaUI != null)
                 notaUI.MostrarNota();
+
+            if (pensamiento != null)
+                pensamiento.MostrarPensamiento(
+                    "Parece que hay algo dentro. Debería encontrar una forma de derribar esa puerta."
+                );
 
             yaLeido = true;
 

@@ -10,6 +10,12 @@ public class NotaUI : MonoBehaviour
 
     public float velocidadFade = 4f;
 
+    [Header("Pensamiento al cerrar")]
+    public PensamientoJugador pensamiento;
+    [TextArea]
+    public string pensamientoAlCerrar;
+    public bool mostrarPensamientoAlCerrar = false;
+
     private bool notaAbierta = false;
     private bool puedeCerrar = false;
 
@@ -67,5 +73,10 @@ public class NotaUI : MonoBehaviour
         canvasGroup.alpha = 0;
         notaPanel.SetActive(false);
         notaAbierta = false;
+
+        if (mostrarPensamientoAlCerrar && pensamiento != null && pensamientoAlCerrar != "")
+        {
+            pensamiento.MostrarPensamiento(pensamientoAlCerrar);
+        }
     }
 }
