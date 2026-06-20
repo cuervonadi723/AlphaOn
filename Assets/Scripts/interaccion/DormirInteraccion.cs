@@ -22,7 +22,12 @@ public class DormirInteraccion : MonoBehaviour
 
     [Header("Comidaaa")]
     public PlayerStats playerStats;
-    public float comidaNecesaria = 100f;
+    public float comidaNecesaria = 90f;
+
+    [Header("Final")]
+    public AudioSource audioSource;
+    public AudioClip sonidoHelicoptero;
+    public GameObject panelFinal;
 
     public string GetTexto()
     {
@@ -42,7 +47,7 @@ public class DormirInteraccion : MonoBehaviour
 
         if (fogataEnCasa == null || !fogataEnCasa.activeSelf)
         {
-            crafting.MostrarMensaje("Hace demasiado frío. Necesito una fogata antes de dormir.");
+           crafting.MostrarMensaje("Hace demasiado frío. Necesito una fogata antes de dormir.");
             return;
         }
 
@@ -66,13 +71,21 @@ public class DormirInteraccion : MonoBehaviour
 
     IEnumerator DormirRutina()
     {
+        
+
         durmiendo = true;
 
         if (crafting != null)
             crafting.MostrarMensaje("Voy a descansar un poco...");
 
+        yield return new WaitForSeconds(1.5f);
+
+        
+
         if (fadeNegro != null)
         {
+            
+
             while (fadeNegro.alpha < 1)
             {
                 fadeNegro.alpha += Time.deltaTime * velocidadFade;
@@ -80,7 +93,9 @@ public class DormirInteraccion : MonoBehaviour
             }
 
             fadeNegro.alpha = 1;
+            
         }
+       
 
         yield return new WaitForSeconds(tiempoPantallaNegra);
 
@@ -90,19 +105,28 @@ public class DormirInteraccion : MonoBehaviour
         ProgresoAntena.instance.yaDurmio = true;
         ProgresoAntena.instance.debeDormir = false;
 
-        if (fadeNegro != null)
-        {
-            while (fadeNegro.alpha > 0)
-            {
-                fadeNegro.alpha -= Time.deltaTime * velocidadFade;
-                yield return null;
-            }
 
-            fadeNegro.alpha = 0;
+
+        if (audioSource != null && sonidoHelicoptero != null)
+        {
+            audioSource.clip = sonidoHelicoptero;
+            audioSource.loop = true;
+            audioSource.Play();
         }
+
+        yield return new WaitForSeconds(2f);
 
         if (crafting != null)
             crafting.MostrarMensaje("Finalmente... voy a salir de aquí.");
+
+        yield return new WaitForSeconds(3f);
+
+        if (panelFinal != null)
+            panelFinal.SetActive(true);
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        Time.timeScale = 0f;
 
         durmiendo = false;
     }

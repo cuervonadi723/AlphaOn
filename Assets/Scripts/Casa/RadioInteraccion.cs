@@ -7,12 +7,19 @@ public class RadioInteraccion : MonoBehaviour
 
     public bool antenaReparada = false;
     public bool yaEscuchoMuelle = false;
+
     public PensamientoJugador pensamiento;
-    private bool yaPensoAntena = false; 
+    private bool yaPensoAntena = false;
 
     private bool jugadorCerca = false;
 
-    [Header("Noche")] //xD es mucho mas prolijo asi jaja
+    [Header("Audios")]
+    public AudioSource audioSource;
+    public AudioClip radioRota;
+    public AudioClip radioReparada;
+    public AmbienteNoche ambienteNoche;
+
+    [Header("Noche")]
     public Light luzSol;
     public float intensidadNoche = 0.15f;
 
@@ -34,11 +41,21 @@ public class RadioInteraccion : MonoBehaviour
     {
         if (!antenaReparada)
         {
-            crafting.MostrarMensaje("Radio: ssszzzz... sin señal... solo se escucha estática...");
+            ReproducirAudio(radioRota);
+
+            if (crafting != null)
+            {
+                crafting.MostrarMensaje(
+                    "Sin señal... solo se escucha estática..."
+                );
+            }
 
             if (!yaPensoAntena && pensamiento != null)
             {
-                pensamiento.MostrarPensamiento("Tal vez Ignacio tenía razón. Debería revisar la antena.");
+                pensamiento.MostrarPensamiento(
+                    "Tal vez Ignacio tenía razón. Debería revisar la antena."
+                );
+
                 yaPensoAntena = true;
             }
 
@@ -47,25 +64,63 @@ public class RadioInteraccion : MonoBehaviour
 
         if (!yaEscuchoMuelle)
         {
-            crafting.MostrarMensaje("Radio: ...¿me recibe?... aquí central de rescate... señal recuperada... manténgase en la zona... enviaremos ayuda al amanecer...");
+            ReproducirAudio(radioReparada);
+
+            if (crafting != null)
+            {
+                crafting.MostrarMensaje(
+                    "¿Me recibe?... aquí central de rescate..."
+                );
+            }
 
             yaEscuchoMuelle = true;
 
             if (ProgresoAntena.instance != null)
                 ProgresoAntena.instance.debeDormir = true;
 
-            Invoke(nameof(MensajeNoche), 5f);
+            Invoke(nameof(MensajeRadioParte2), 5f);
+            Invoke(nameof(MensajeNoche), 10f);
 
             return;
         }
 
-        crafting.MostrarMensaje("Radio: Solo se escucha estática...");
+        ReproducirAudio(radioRota);
+
+        if (crafting != null)
+        {
+            crafting.MostrarMensaje(
+                "Radio: Solo se escucha estática..."
+            );
+        }
+    }
+
+    void MensajeRadioParte2()
+    {
+        if (crafting != null)
+        {
+            crafting.MostrarMensaje(
+                "Señal recuperada... manténgase en la zona... enviaremos ayuda al amanecer."
+            );
+        }
+    }
+
+    void ReproducirAudio(AudioClip clip)
+    {
+        if (audioSource == null || clip == null)
+            return;
+
+        audioSource.Stop();
+        audioSource.PlayOneShot(clip);
     }
 
     void MensajeNoche()
     {
         if (luzSol != null)
             luzSol.intensity = intensidadNoche;
+
+        if (ambienteNoche != null)
+            ambienteNoche.ActivarNoche();
+
 
         if (pensamiento != null)
         {

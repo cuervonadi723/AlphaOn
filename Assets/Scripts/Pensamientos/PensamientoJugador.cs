@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using System.Collections;
+
 
 
 public class PensamientoJugador : MonoBehaviour
 {
     public TextMeshProUGUI textoPensamiento;
     public float duracion = 5f;
+    public UIFade pensamientoFade;
 
     [Header("Pensamiento inicial")]
     public bool mostrarAlInicio = true;
@@ -44,10 +45,17 @@ public class PensamientoJugador : MonoBehaviour
 
     IEnumerator MostrarTemporal(string mensaje)
     {
+        if (pensamientoFade != null)
+            pensamientoFade.Mostrar();
+
         textoPensamiento.text = mensaje;
 
         yield return new WaitForSeconds(duracion);
 
-        textoPensamiento.text = "";
+        if (pensamientoFade != null)
+            pensamientoFade.Ocultar();
+        else
+            textoPensamiento.text = "";
     }
+
 }

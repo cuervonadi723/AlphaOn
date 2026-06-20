@@ -11,18 +11,12 @@ public class UnlockObstacle : MonoBehaviour
 
     [Header("Audio")]
     public AudioClip sonidoGolpe;
-    private AudioSource audioSource;
+    public AudioSource audioSource;
 
     [Header("Particulas")]
     public ParticleSystem particulasMadera;
 
-    void Start()
-    {
-        PlayerInput player = FindObjectOfType<PlayerInput>();
-
-        if (player != null)
-            audioSource = player.GetComponent<AudioSource>();
-    }
+    
 
     public void IntentarDesbloquear(CraftingSystem crafting, RaycastHit hit)
     {
@@ -70,7 +64,7 @@ public class UnlockObstacle : MonoBehaviour
         }
 
         crafting.MostrarMensaje("Rompiste el bloqueo con el hacha.");
-        Destroy(gameObject);
+        Destroy(gameObject, 0.3f);
     }
 
     public string GetTexto(CraftingSystem crafting)

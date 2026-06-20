@@ -7,8 +7,16 @@ public class PanelElectricoInteraccion : MonoBehaviour
     public RadioInteraccion radio;
     public MesaTrabajoInteraccion mesaTrabajo;
     public PensamientoJugador pensamiento;
+    public ParticleSystem chispasPanel;
+    public Light focoPanel;
 
     private bool sistemaActivado = false;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip sonidoPanelRoto;
+    public AudioClip sonidoInstalarFusibles;
+    public AudioClip sonidoActivarSistema;
 
     public void Revisar(CraftingSystem crafting)
     {
@@ -16,16 +24,28 @@ public class PanelElectricoInteraccion : MonoBehaviour
         {
             if (!ProgresoAntena.instance.tieneFusibles)
             {
+                if (audioSource != null && sonidoPanelRoto != null)
+                    audioSource.PlayOneShot(sonidoPanelRoto);
+                if (chispasPanel != null)
+                    chispasPanel.Play();
+
                 crafting.MostrarMensaje("Los fusibles están quemados.");
                 return;
             }
 
+            if (audioSource != null && sonidoInstalarFusibles != null)
+                audioSource.PlayOneShot(sonidoInstalarFusibles);
+
             ProgresoAntena.instance.fusiblesInstalados = true;
             ProgresoAntena.instance.tieneFusibles = false;
 
-            crafting.inventory.RemoveResource(PlayerInventory.TipoRecurso.Fusibles, 1);
+            crafting.inventory.RemoveResource(
+                PlayerInventory.TipoRecurso.Fusibles,
+                1
+            );
 
             MochilaUI mochila = FindObjectOfType<MochilaUI>();
+
             if (mochila != null)
                 mochila.ActualizarUI();
 
@@ -33,10 +53,15 @@ public class PanelElectricoInteraccion : MonoBehaviour
             return;
         }
 
-
         if (!sistemaActivado)
         {
+            if (audioSource != null && sonidoActivarSistema != null)
+                audioSource.PlayOneShot(sonidoActivarSistema);
+
             sistemaActivado = true;
+
+            if (focoPanel != null)
+                focoPanel.enabled = true;
 
             if (radio != null)
                 radio.ActivarSenal();

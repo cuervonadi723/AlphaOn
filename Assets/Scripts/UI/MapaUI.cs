@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class MapaUI : MonoBehaviour
 {
     public GameObject mapaPanel;
@@ -12,6 +11,11 @@ public class MapaUI : MonoBehaviour
     private bool mapaAbierto = false;
 
     public float velocidadFade = 5f;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip sonidoAbrirMapa;
+    public AudioClip sonidoCerrarMapa;
 
     void Start()
     {
@@ -27,9 +31,19 @@ public class MapaUI : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.M))
         {
             if (mapaAbierto)
+            {
+                if (audioSource != null && sonidoCerrarMapa != null)
+                    audioSource.PlayOneShot(sonidoCerrarMapa);
+
                 StartCoroutine(FadeOut());
+            }
             else
+            {
+                if (audioSource != null && sonidoAbrirMapa != null)
+                    audioSource.PlayOneShot(sonidoAbrirMapa);
+
                 StartCoroutine(FadeIn());
+            }
         }
     }
 
@@ -61,9 +75,7 @@ public class MapaUI : MonoBehaviour
         }
 
         canvasGroup.alpha = 0;
-
         mapaPanel.SetActive(false);
-
         mapaAbierto = false;
     }
 }

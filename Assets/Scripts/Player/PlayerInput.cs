@@ -5,9 +5,19 @@ public class PlayerInput : MonoBehaviour
 {
     public HotbarUI hotbar;
     public CraftingSystem crafting;
-    public float rango = 5f;
+    public float rango = 7f;
 
     public TextMeshProUGUI interactuarTexto;
+    public GameObject lataVaciaPrefab;
+    public GameObject botellaVaciaPrefab;
+    public Transform puntoSoltar;
+
+    [Header("Audios")]
+    public AudioSource audioSource;
+    public AudioClip sonidoComerLata;
+    public AudioClip sonidoVenda;
+    public AudioClip sonidoTomarAgua;
+
 
     RaycastHit hit;
 
@@ -53,7 +63,7 @@ public class PlayerInput : MonoBehaviour
             if (r != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = "E: recolectar";
+                interactuarTexto.text = "RECOLECTAR";
                 return;
             }
 
@@ -61,7 +71,7 @@ public class PlayerInput : MonoBehaviour
             if (arbol != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = "Click: " + arbol.GetTexto(crafting).Replace("E: ", "");
+                interactuarTexto.text = "TALAR";
                 return;
             }
 
@@ -69,7 +79,7 @@ public class PlayerInput : MonoBehaviour
             if (roca != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = "Click: " + roca.GetTexto(crafting).Replace("E: ", "");
+                interactuarTexto.text = "PICAR";
                 return;
             }
 
@@ -77,7 +87,7 @@ public class PlayerInput : MonoBehaviour
             if (obstaculo != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = obstaculo.GetTexto(crafting);
+                interactuarTexto.text = "ROMPER";
                 return;
             }
 
@@ -85,7 +95,15 @@ public class PlayerInput : MonoBehaviour
             if (comida != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = "E: recoger lata";
+                interactuarTexto.text = "TOMAR";
+                return;
+            }
+
+            BotellaAguaItem botella = hit.collider.GetComponentInParent<BotellaAguaItem>();
+            if (botella != null)
+            {
+                interactuarTexto.gameObject.SetActive(true);
+                interactuarTexto.text = "TOMAR";
                 return;
             }
 
@@ -93,7 +111,7 @@ public class PlayerInput : MonoBehaviour
             if (agua != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = "E: beber";
+                interactuarTexto.text = "BEBER";
                 return;
             }
 
@@ -101,7 +119,7 @@ public class PlayerInput : MonoBehaviour
             if (nota != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = "E: leer nota";
+                interactuarTexto.text = "LEER";
                 return;
             }
 
@@ -109,7 +127,7 @@ public class PlayerInput : MonoBehaviour
             if (generador != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = generador.GetTexto();
+                interactuarTexto.text = "REVISAR";
                 return;
             }
 
@@ -117,7 +135,7 @@ public class PlayerInput : MonoBehaviour
             if (panel != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = panel.GetTexto();
+                interactuarTexto.text = "REVISAR";
                 return;
             }
 
@@ -125,7 +143,7 @@ public class PlayerInput : MonoBehaviour
             if (bidon != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = bidon.GetTexto();
+                interactuarTexto.text = "TOMAR";
                 return;
             }
 
@@ -137,7 +155,7 @@ public class PlayerInput : MonoBehaviour
                 if (texto != "")
                 {
                     interactuarTexto.gameObject.SetActive(true);
-                    interactuarTexto.text = texto;
+                    interactuarTexto.text = "REVISAR";
                     return;
                 }
             }
@@ -146,7 +164,7 @@ public class PlayerInput : MonoBehaviour
             if (cama != null)
             {
                 interactuarTexto.gameObject.SetActive(true);
-                interactuarTexto.text = cama.GetTexto();
+                interactuarTexto.text = "DORMIR";
                 return;
             }
 
@@ -174,6 +192,13 @@ public class PlayerInput : MonoBehaviour
             if (comida != null)
             {
                 comida.Recolectar(crafting);
+                return;
+            }
+
+            BotellaAguaItem botella = hit.collider.GetComponentInParent<BotellaAguaItem>();
+            if (botella != null)
+            {
+                botella.Recolectar(crafting);
                 return;
             }
 
@@ -245,6 +270,13 @@ public class PlayerInput : MonoBehaviour
             UsarLataComida();
             return;
         }
+
+        if (hotbar != null && hotbar.SlotTieneItem(MochilaUI.ItemID.BotellaAgua))
+        {
+            UsarBotellaAgua();
+            return;
+        }
+
 
 
         Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0f));
@@ -321,6 +353,9 @@ public class PlayerInput : MonoBehaviour
 
         inventario.RemoveResource(PlayerInventory.TipoRecurso.Venda, 1);
 
+        if (audioSource != null && sonidoVenda != null)
+            audioSource.PlayOneShot(sonidoVenda);
+
         MochilaUI mochila = FindObjectOfType<MochilaUI>();
         if (mochila != null)
             mochila.ActualizarUI();
@@ -349,12 +384,68 @@ public class PlayerInput : MonoBehaviour
         }
 
         stats.food.Add(30f);
+
         inventario.RemoveResource(PlayerInventory.TipoRecurso.LataComida, 1);
+
+        if (lataVaciaPrefab != null && puntoSoltar != null)
+        {
+            Instantiate(
+                lataVaciaPrefab,
+                puntoSoltar.position,
+                puntoSoltar.rotation
+            );
+        }
+
+        if (audioSource != null && sonidoComerLata != null)
+            audioSource.PlayOneShot(sonidoComerLata);
 
         MochilaUI mochila = FindObjectOfType<MochilaUI>();
         if (mochila != null)
             mochila.ActualizarUI();
 
         crafting.MostrarMensaje("Comiste una lata de comida.");
+    }
+
+    void UsarBotellaAgua()
+    {
+        PlayerStats stats = GetComponent<PlayerStats>();
+        PlayerInventory inventario = GetComponent<PlayerInventory>();
+
+        if (stats == null || inventario == null)
+            return;
+
+        if (!inventario.HasResource(PlayerInventory.TipoRecurso.BotellaAgua, 1))
+        {
+            crafting.MostrarMensaje("No tengo agua.");
+            return;
+        }
+
+        if (stats.water.current >= 100f)
+        {
+            crafting.MostrarMensaje("No tengo sed.");
+            return;
+        }
+
+        stats.water.Add(30f);
+
+        inventario.RemoveResource(PlayerInventory.TipoRecurso.BotellaAgua, 1);
+
+        if (botellaVaciaPrefab != null && puntoSoltar != null)
+        {
+            Instantiate(
+                botellaVaciaPrefab,
+                puntoSoltar.position,
+                puntoSoltar.rotation
+            );
+        }
+
+        if (audioSource != null && sonidoTomarAgua != null)
+            audioSource.PlayOneShot(sonidoTomarAgua);
+
+        MochilaUI mochila = FindObjectOfType<MochilaUI>();
+        if (mochila != null)
+            mochila.ActualizarUI();
+
+        crafting.MostrarMensaje("Tomaste agua.");
     }
 }

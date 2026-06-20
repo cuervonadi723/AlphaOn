@@ -22,6 +22,7 @@ public class MochilaUI : MonoBehaviour
         Fusibles,
         Hojas,
         LataComida,
+        BotellaAgua,
     }
 
     [System.Serializable]

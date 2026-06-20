@@ -15,6 +15,7 @@ public class PlayerInventory : MonoBehaviour
         Fusibles,
         Hojas,
         LataComida,
+        BotellaAgua,
     }
 
     [System.Serializable]

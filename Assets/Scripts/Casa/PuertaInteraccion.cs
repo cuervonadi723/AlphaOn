@@ -17,6 +17,9 @@ public class PuertaInteraccion : MonoBehaviour
     private Quaternion rotacionCerrada;
     private Quaternion rotacionAbierta;
 
+    public AudioSource audioSource;
+    public AudioClip[] sonidosPuerta;
+
     void Start()
     {
         rotacionCerrada = puerta.localRotation;
@@ -30,6 +33,14 @@ public class PuertaInteraccion : MonoBehaviour
     {
         if (jugadorCerca && Input.GetKeyDown(KeyCode.E) && !moviendoPuerta)
         {
+            if (audioSource != null && sonidosPuerta.Length > 0)
+            {
+                int random = Random.Range(0, sonidosPuerta.Length);
+
+                audioSource.pitch = Random.Range(0.95f, 1.05f);
+                audioSource.PlayOneShot(sonidosPuerta[random]);
+            }
+
             if (puertaAbierta)
             {
                 StartCoroutine(MoverPuerta(rotacionCerrada));

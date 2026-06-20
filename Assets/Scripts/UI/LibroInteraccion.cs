@@ -10,6 +10,10 @@ public class LibroInteraccion : MonoBehaviour
     public PensamientoJugador pensamiento;
     public UnlockObstacle obstaculo;
 
+    public AudioSource audioSource;
+    public AudioClip sonidoLibro;
+
+
     private bool jugadorCerca = false;
     private bool yaLeido = false;
 
@@ -26,6 +30,12 @@ public class LibroInteraccion : MonoBehaviour
     {
         if (jugadorCerca && Input.GetKeyDown(KeyCode.E) && !yaLeido)
         {
+            if (audioSource != null && sonidoLibro != null)
+            {
+                audioSource.pitch = Random.Range(0.95f, 1.05f);
+                audioSource.PlayOneShot(sonidoLibro);
+            }
+            
             if (libroUI != null)
                 libroUI.DesbloquearLibro();
 
@@ -48,7 +58,7 @@ public class LibroInteraccion : MonoBehaviour
             if (obstaculo != null)
                 obstaculo.enabled = true;
 
-            gameObject.SetActive(false);
+            Destroy(gameObject, 0.4f);
         }
     }
 

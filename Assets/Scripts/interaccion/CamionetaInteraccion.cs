@@ -5,6 +5,8 @@ using UnityEngine;
 public class CamionetaInteraccion : MonoBehaviour
 {
     private bool revisada = false;
+    public AudioSource audioSource;
+    public AudioClip sonidoRevisar;
 
     public void Revisar(CraftingSystem crafting)
     {
@@ -25,6 +27,9 @@ public class CamionetaInteraccion : MonoBehaviour
             crafting.MostrarMensaje("Necesito algo para transportar combustible.");
             return;
         }
+
+        if (audioSource != null && sonidoRevisar != null)
+            audioSource.PlayOneShot(sonidoRevisar);
 
         revisada = true;
 

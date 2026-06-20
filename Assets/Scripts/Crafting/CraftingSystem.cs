@@ -5,6 +5,9 @@ using System.Collections;
 public class CraftingSystem : MonoBehaviour
 {
     public PlayerInventory inventory;
+    public UIFade mensajeFade;
+    public AudioSource audioSource;
+    public AudioClip sonidoCraftCompleto;
 
     public enum Crafteos
     {
@@ -91,6 +94,11 @@ public class CraftingSystem : MonoBehaviour
             textoContadorCrafteo.text = "";
 
         GastarRecursos(receta);
+
+        if (audioSource != null && sonidoCraftCompleto != null)
+        {
+            audioSource.PlayOneShot(sonidoCraftCompleto);
+        }
 
         if (crafteo == Crafteos.Venda)
         {
@@ -219,8 +227,16 @@ public class CraftingSystem : MonoBehaviour
 
     IEnumerator MostrarMensajeTemporal(string mensaje)
     {
+        if (mensajeFade != null)
+            mensajeFade.Mostrar();
+
         mensajeTexto.text = mensaje;
+
         yield return new WaitForSeconds(5f);
-        mensajeTexto.text = "";
+
+        if (mensajeFade != null)
+            mensajeFade.Ocultar();
+        else
+            mensajeTexto.text = "";
     }
 }

@@ -17,6 +17,10 @@ public class AnimacionHerramienta : MonoBehaviour
 
     private bool golpeando = false;
 
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip sonidoSwing;
+
     void Start()
     {
         posicionNormal = transform.localPosition;
@@ -38,6 +42,12 @@ public class AnimacionHerramienta : MonoBehaviour
     IEnumerator Golpe()
     {
         golpeando = true;
+
+        if (audioSource != null && sonidoSwing != null)
+        {
+            audioSource.pitch = Random.Range(0.95f, 1.05f);
+            audioSource.PlayOneShot(sonidoSwing);
+        }
 
         float tiempo = 0;
 
